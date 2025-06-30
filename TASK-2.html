@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const Calculator = () => {
+      const [display, setDisplay] = useState('0');
+      const [history, setHistory] = useState([]);
+      const [isDarkMode, setIsDarkMode] = useState(true);
+
+      const append = (value) => {
+        setDisplay((prev) => {
+          if (prev === '0' && value !== '.') return value;
+          return prev + value;
+        });
+      };
+
+      const clearDisplay = () => {
+        setDisplay('0');
+      };
+
+      const deleteLast = () => {
+        setDisplay((prev) => (prev.length > 1 ? prev.slice(0, -1) : '0'));
+      };
+
+      const calculate = () => {
+        try {
+          const expression = display.replace(/×/g, '*').replace(/÷/g, '/');
+          const result = eval(expression);
+          setDisplay(result.toString());
+          setHistory((prev) => [...prev, `${expression} = ${result}`].slice(-5));
+        } catch {
+          setDisplay('Error');
+        }
+      };
+
+      const toggleTheme = () => {
+        setIsDarkMode((prev) => !prev);
+      };
+
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          const key = e.key;
+          if (!isNaN(key) || '+-*/.%'.includes(key)) {
+            append(key);
+          } else if (key === 'Enter') {
+            calculate();
+          } else if (key === 'Backspace') {
+            deleteLast();
+          } else if (key === 'Escape') {
+            clearDisplay();
+          }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+      }, [display]);
+
+      const buttonClasses = (type) => {
+        const base = 'p-4 text-lg rounded-lg transition-colors duration-200';
+        if (type === 'operator') return `${base} bg-orange-500 hover:bg-orange-400 text-white`;
+        if (type === 'equal') return `${base} bg-green-600 hover:bg-green-500 text-white col-span-2`;
+        if (type === 'clear') return `${base} bg-red-600 hover:bg-red-500 text-white`;
+        return `${base} bg-gray-700 hover:bg-gray-600 text-white`;
+      };
+
+      return (
+        <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+          <div className={`w-full max-w-xs p-5 rounded-2xl shadow-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Calculator</h1>
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-full bg-gray-700 text-white hover:bg-gray-600"
+              >
+                {isDarkMode ? '☀️' : '🌙'}
+              </button>
+            </div>
+            <div className={`text-right p-4 rounded-lg mb-4 text-2xl ${isDarkMode ? 'bg-black text-green-400' : 'bg-gray-200 text-gray-800'}`}>
+              {display}
+            </div>
+            <div className="grid grid-cols-4 gap-2 mb-4">
+              {['C', '⌫', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '−', '1', '2', '3', '+', '0', '.', '='].map((btn, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    if (btn === 'C') clearDisplay();
+                    else if (btn === '⌫') deleteLast();
+                    else if (btn === '=') calculate();
+                    else append(btn);
+                  }}
+                  className={buttonClasses(
+                    btn === 'C' ? 'clear' : btn === '=' ? 'equal' : '÷×−+'.includes(btn) ? 'operator' : ''
+                  )}
+                >
+                  {btn}
+                </button>
+              ))}
+            </div>
+            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+              <h2 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>History</h2>
+              <ul className="text-sm">
+                {history.length ? (
+                  history.map((item, i) => (
+                    <li key={i} className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {item}
+                    </li>
+                  ))
+                ) : (
+                  <li className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>No calculations yet</li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<Calculator />, document.getElementById('root'));
+  </script>
+</body>
+</html>
