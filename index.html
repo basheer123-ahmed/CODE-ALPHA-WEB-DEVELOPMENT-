@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsive Image Gallery</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 40px 20px 20px;
+      color: #2c3e50;
+      font-size: 2.5em;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-buttons {
+      text-align: center;
+      margin: 20px 0 40px;
+    }
+
+    .filter-buttons button {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      border: none;
+      margin: 8px;
+      padding: 12px 24px;
+      cursor: pointer;
+      color: white;
+      font-weight: 600;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-buttons button:hover {
+      background: linear-gradient(45deg, #2980b9, #3498db);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-buttons button.active {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px;
+      transition: all 0.4s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery img:hover {
+      transform: scale(1.08) rotate(1deg);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Lightbox styles */
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .lightbox img {
+      max-width: 85%;
+      max-height: 70vh;
+      border-radius: 15px;
+      border: 3px solid #fff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .lightbox .controls {
+      margin-top: 25px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .lightbox button {
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      color: white;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .lightbox button:hover {
+      background: linear-gradient(45deg, #2980b9, #3498db);
+      transform: translateY(-2px);
+    }
+
+    .lightbox button.close-btn {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .filter-buttons button {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+
+      .gallery img {
+        height: 150px;
+      }
+
+      .lightbox img {
+        max-width: 95%;
+        max-height: 60vh;
+      }
+
+      .lightbox .controls {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Explore Our Gallery</h1>
+
+<div class="filter-buttons">
+  <button onclick="filterImages('all')" class="active">All</button>
+  <button onclick="filterImages('nature')">Nature</button>
+  <button onclick="filterImages('animals')">Animals</button>
+  <button onclick="filterImages('architecture')">Architecture</button>
+</div>
+
+<div class="gallery" id="gallery">
+  <img src="https://picsum.photos/id/1018/600/400" data-category="nature" onclick="openLightbox(0)">
+  <img src="https://picsum.photos/id/1024/600/400" data-category="animals" onclick="openLightbox(1)">
+  <img src="https://picsum.photos/id/1039/600/400" data-category="architecture" onclick="openLightbox(2)">
+  <img src="https://picsum.photos/id/1056/600/400" data-category="nature" onclick="openLightbox(3)">
+  <img src="https://picsum.photos/id/1069/600/400" data-category="animals" onclick="openLightbox(4)">
+  <img src="https://picsum.photos/id/1043/600/400" data-category="architecture" onclick="openLightbox(5)">
+  <img src="https://picsum.photos/id/1084/600/400" data-category="nature" onclick="openLightbox(6)">
+  <img src="https://picsum.photos/id/111/600/400" data-category="animals" onclick="openLightbox(7)">
+  <img src="https://picsum.photos/id/237/600/400" data-category="animals" onclick="openLightbox(8)">
+  <img src="https://picsum.photos/id/659/600/400" data-category="architecture" onclick="openLightbox(9)">
+  <img src="https://picsum.photos/id/200/600/400" data-category="nature" onclick="openLightbox(10)">
+  <img src="https://picsum.photos/id/1074/600/400" data-category="architecture" onclick="openLightbox(11)">
+</div>
+
+<div class="lightbox" id="lightbox">
+  <img id="lightbox-img" src="">
+  <div class="controls">
+    <button onclick="prevImage()">⟨ Prev</button>
+    <button onclick="nextImage()">Next ⟩</button>
+    <button onclick="closeLightbox()" class="close-btn">Close ✕</button>
+  </div>
+</div>
+
+<script>
+  const images = Array.from(document.querySelectorAll('.gallery img'));
+  const filterButtons = document.querySelectorAll('.filter-buttons button');
+  let currentIndex = 0;
+
+  function openLightbox(index) {
+    currentIndex = index;
+    document.getElementById('lightbox-img').src = images[index].src;
+    document.getElementById('lightbox').style.display = 'flex';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+  }
+
+  function nextImage() {
+    currentIndex = (currentIndex + 1) % images.length;
+    document.getElementById('lightbox-img').src = images[currentIndex].src;
+  }
+
+  function prevImage() {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    document.getElementById('lightbox-img').src = images[currentIndex].src;
+  }
+
+  function filterImages(category) {
+    images.forEach(img => {
+      if (category === 'all' || img.dataset.category === category) {
+        img.style.display = '';
+      } else {
+        img.style.display = 'none';
+      }
+    });
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`button[onclick="filterImages('${category}')"]`).classList.add('active');
+  }
+
+  // Close lightbox on Escape key
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') nextImage();
+    else if (e.key === 'ArrowLeft') prevImage();
+  });
+
+  // Initialize with 'All' filter active
+  filterImages('all');
+</script>
+
+</body>
+</html>
